@@ -15,11 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-
+from django.urls import path, re_path
+from .views import SMSCodeView
 
 urlpatterns = [
-    path(r'admin/', admin.site.urls),
-    path(r'sms_codes/', include('verification.urls'))
-
+    re_path(r'(?P<mobile>1[3-9]\d{9})/', SMSCodeView.as_view())
 ]
