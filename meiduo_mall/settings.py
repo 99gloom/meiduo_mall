@@ -26,7 +26,10 @@ SECRET_KEY = 'django-insecure-q(h1siqi*lsz3ob8jgcvka5f-wu_39^g@n5ejpgo7$f+ao$pip
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1'
+]
 
 
 # Application definition
@@ -210,7 +213,8 @@ REST_FRAMEWORK = {
 
 # CORS白名单配置项
 CORS_ORIGIN_WHITELIST=[
-    'http://localhost:8080'
+    'http://localhost:8080',
+    'http://127.0.0.1:8080'
 ]
 
 # 修改Django认证系统的用户模型类
