@@ -3,14 +3,14 @@ import django_redis
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from ronglian_sms_sdk import SmsSDK
-from .constants import SEND_SMS_CODE_SEND_EXPIRES, REDIS_SMS_CODE_EXPIRES
+
+
+from .constants import REDIS_SMS_CODE_EXPIRES, SEND_SMS_CODE_SEND_EXPIRES
+from celery_tasks.sms.tasks import send_sms_code
+
+
 # Create your views here.
-sdk = SmsSDK(
-    accId='2c94811c8a27cf2d018a4fbf69820f1b',
-    accToken='11ad5611b8b94ba19f9cec65ee6de301',
-    appId='2c94811c8a27cf2d018a4fbf6ad30f22'
-)
+
 
 class SMSCodeView(APIView):
     def get(self, request, mobile):
@@ -30,7 +30,7 @@ class SMSCodeView(APIView):
 
         # 2, 生成验证码
         sms_code = '%04d' % random.randint(0,9999)
-
+        print(sms_code)
         # 3, 把验证码存储至redis
         # 3.1 创建管道，优化redis
         pl = redis_connect.pipeline()
@@ -38,8 +38,10 @@ class SMSCodeView(APIView):
         pl.setex(send_signal, SEND_SMS_CODE_SEND_EXPIRES, 1)
         pl.execute()
 
-        # 4, 将验证码发送到荣联云通讯
-        res = sdk.sendMessage('1', mobile, (sms_code, REDIS_SMS_CODE_EXPIRES // 60))
 
-        # 5, 相应
+        # 4, 使用celery将验证码发送到荣联云通讯
+        send_sms_code.delay(mobile,sms_code)
+
+
+        # 5, 响应
         return Response({'message': 'to'})

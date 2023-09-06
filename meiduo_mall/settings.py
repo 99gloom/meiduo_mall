@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import datetime
 from pathlib import Path
 import os, sys
 
@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'apps.users'
+    'apps.users',
+    'apps.verification'
 ]
 
 MIDDLEWARE = [
@@ -208,7 +209,7 @@ LOGGING = {
 # DRF配置项
 REST_FRAMEWORK = {
     # 异常处理
-    'EXCEPTION_HANDLER': 'meiduo_mail.utils.exceptions.exception_handler',
+    'EXCEPTION_HANDLER': 'meiduo_mall.utils.exceptions.exception_handler',
 }
 
 # CORS白名单配置项
@@ -217,12 +218,20 @@ CORS_ORIGIN_WHITELIST=[
     'http://127.0.0.1:8080'
 ]
 
+# JWT授权
+JWT_AUTH = {
+    # 授权时间
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=5),
+    # 登录视图的构造响应数据的函数
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
+}
+
 # 修改Django认证系统的用户模型类
 #  String model references must be of the form 'app_label.ModelName'.  应用.模型名
 # AUTH_USER_MODEL = 'meiduo_mall.apps.users.models.User'
 AUTH_USER_MODEL = 'users.User'
 
-# CORS_ALLOW_CREDENTIALS = True  # 跨域时允许携带cookie
+# 跨域时允许携带cookie
+CORS_ALLOW_CREDENTIALS = True
 #
-
 
